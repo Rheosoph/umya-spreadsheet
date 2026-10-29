@@ -266,25 +266,19 @@ fn read_and_wite_method(book: &mut umya_spreadsheet::Spreadsheet) {
 }
 
 #[test]
-fn read_and_wite_by_empty() {
-    // reader
+fn rejects_inconsistent_empty_workbook_headers() {
+    // This fixture has different local and central timestamps for core.xml.
     let path = std::path::Path::new("./tests/test_files/aaa_empty.xlsx");
-    let book = umya_spreadsheet::reader::xlsx::read(path).unwrap();
-
-    // writer
-    let path = std::path::Path::new("./tests/result_files/bbb_empty.xlsx");
-    let _ = umya_spreadsheet::writer::xlsx::write(&book, path);
+    let error = umya_spreadsheet::reader::xlsx::read(path).err().unwrap();
+    assert!(error.to_string().contains("last modified time mismatch"));
 }
 
 #[test]
-fn lazy_read_and_wite_by_empty() {
-    // reader
+fn lazy_reader_rejects_inconsistent_empty_workbook_headers() {
+    // Lazy readers must reject the same malformed archive before reading sheets.
     let path = std::path::Path::new("./tests/test_files/aaa_empty.xlsx");
-    let book = umya_spreadsheet::reader::xlsx::lazy_read(path).unwrap();
-
-    // writer
-    let path = std::path::Path::new("./tests/result_files/bbb_lazy_empty.xlsx");
-    let _ = umya_spreadsheet::writer::xlsx::write(&book, path);
+    let error = umya_spreadsheet::reader::xlsx::lazy_read(path).err().unwrap();
+    assert!(error.to_string().contains("last modified time mismatch"));
 }
 
 #[test]

@@ -47,6 +47,7 @@ pub fn read_reader<R: io::Read + io::Seek>(
     with_sheet_read: bool,
 ) -> Result<Spreadsheet, XlsxError> {
     let mut arv = zip::read::ZipArchive::new(reader)?;
+    arv.validate_header_consistency()?;
 
     let mut book = workbook::read(&mut arv)?;
     doc_props_app::read(&mut arv, &mut book)?;
